@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+    <title>Cs Strike</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+
+  <body>
+    <div class="vid-container">
+<!--main background image -->
+      <img class="bgvid"  src="graphics/d.jpg" >
+      <div class="inner-container">
+<!-- Bluer box background image -->
+        <img class="bgvid inner"  src="graphics/d.jpg" >
+
+        <div class="box">
+          <input type="text" class="chat-name" placeholder="Enter your name..">
+  		      <textarea class="chat-textarea" placeholder="Enter your message....."></textarea>
+  		      <div class="chat-status">Status:<span>Idle</span></div>
+        </div>
+      </div>
+    </div>
+<script type="text/javascript" src="http://your server ip:8080/socket.io/socket.io.js"></script>
+
+<script>
+(function(){
+  var getNode = function(s){
+    return document.querySelector(s);
+  },
+    //Get require nodes.....
+  status = getNode('.chat-status span'),
+  message = getNode('.chat-message'),
+  chatName = getNode('.chat-name'),
+  textArea = getNode('.chat-textarea'),
+  statusDefault = status.textContent,
+  setStatus = function(s){
+    status.textContent = s;
+    if(s !== statusDefault){
+      var delay = setTimeout(function(){
+      setStatus(statusDefault);
+    },3000);
+    }
+  };
+  //console.log(statusDefault);
+  //setStatus('testing');
+
+  try{
+    var socket =  io.connect('http://your server ip:8080');
+  } catch(e){
+    //set warnning
+  }
+
+  if (socket !== undefined){
+    //listen for output on textarea
+      socket.on('output',function(data){
+        console.log(data.name+':'+data.message);
+      });
+    //listen or status
+    socket.on('status',function(data){
+      setStatus((typeof data == 'object') ? data.message:data);
+
+      if(data.clear == true){
+      textArea.value='';
+      }
+    });
+    //listen for keydown
+    //console.log('Ok!');
+    textArea.addEventListener('keydown',function(event){
+      var self = this,
+        name = chatName.value;
+      //console.log(event);
+      //send data if shift+enter key press....
+      if (event.which == 13 && event.shiftKey === false){
+        //console.log('send!');
+        socket.emit('input',{
+            name: name,
+            message: self.value
+        });
+
+        event.preventDefault();
+      }
+    });
+  }
+})();
+</script>
+
+
+
+
+  </body>
+</html>
