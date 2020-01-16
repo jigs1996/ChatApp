@@ -38,7 +38,7 @@ app.get('/',function(req,res){
 
 
 //database connection
-mongo.connect('mongodb://your server ip/chat',function(err,db){
+mongo.connect('mongodb://127.0.0.1/chat',function(err,db){
 	if(err) throw err;
 	client.on('connection', function(socket) {
 	//console.log('someone has connected.......');
